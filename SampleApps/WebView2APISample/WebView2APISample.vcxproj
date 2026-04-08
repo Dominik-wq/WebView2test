@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -247,6 +247,7 @@
     <ClInclude Include="ScenarioNavigateWithWebResourceRequest.h" />
     <ClInclude Include="ScenarioNonClientRegionSupport.h" />
     <ClInclude Include="ScenarioNotificationReceived.h" />
+    <ClInclude Include="ScenarioOriginConfigurationAPI.h" />
     <ClInclude Include="ScenarioPermissionManagement.h" />
     <ClInclude Include="ScenarioSaveAs.h" />
     <ClInclude Include="ScenarioScreenCapture.h" />
@@ -312,6 +313,7 @@
     <ClCompile Include="ScenarioNavigateWithWebResourceRequest.cpp" />
     <ClCompile Include="ScenarioNonClientRegionSupport.cpp" />
     <ClCompile Include="ScenarioNotificationReceived.cpp" />
+    <ClCompile Include="ScenarioOriginConfigurationAPI.cpp" />
     <ClCompile Include="ScenarioPermissionManagement.cpp" />
     <ClCompile Include="ScenarioSaveAs.cpp" />
     <ClCompile Include="ScenarioScreenCapture.cpp" />

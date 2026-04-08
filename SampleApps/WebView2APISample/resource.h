@@ -222,6 +222,10 @@
 #define IDM_SCENARIO_SERVICE_WORKER_POST_MESSAGE 3010
 #define IDM_SCENARIO_WEBRTC_UDP_PORT_CONFIGURATION 3011
 #define IDM_TOGGLE_SERVICE_WORKER_JS_API_SETTING 3012
+// Base ID for dynamically created controls in TextInputDialog.
+// IDs 5000-5099 are reserved for dynamic controls (10 groups x 10 options).
+#define IDC_DYNAMIC_CONTROL_BASE 5000
+
 #define ID_BLOCKEDSITES                 32773
 #define ID_SETTINGS_NAVIGATETOSTRING    32774
 #define ID_ADD_INITIALIZE_SCRIPT        32775

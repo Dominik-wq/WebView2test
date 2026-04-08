@@ -1,4 +1,4 @@
-﻿// Copyright (C) Microsoft Corporation. All rights reserved.
+// Copyright (C) Microsoft Corporation. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,6 +70,8 @@ namespace WebView2WpfBrowser
         public static RoutedCommand PinchZoomCommand = new RoutedCommand();
         public static RoutedCommand SwipeNavigationCommand = new RoutedCommand();
         public static RoutedCommand DeleteProfileCommand = new RoutedCommand();
+        public static RoutedCommand SetOriginFeaturesCommand = new RoutedCommand();
+        public static RoutedCommand GetEffectiveFeaturesForOriginCommand = new RoutedCommand();
         public static RoutedCommand NonClientRegionSupportCommand = new RoutedCommand();
         public static RoutedCommand NonClientRegionSupportEnabledCommand = new RoutedCommand();
         public static RoutedCommand ToggleMuteStateCommand = new RoutedCommand();
@@ -265,6 +267,7 @@ namespace WebView2WpfBrowser
             this.CreationProperties = creationProperties;
             DataContext = this;
             Loaded += MainWindow_Loaded;
+            Closing += MainWindow_Closing;
             _isNewWindowRequest = isNewWindowRequest;
             InitializeComponent();
         }
@@ -276,6 +279,27 @@ namespace WebView2WpfBrowser
             SetWebView(webView2XamlElement, false /*useCompositionControl*/);
             await InitializeWebView(webView2XamlElement);
             SetWebViewVisibility(true);
+        }
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (_isPrintToPdfInProgress)
+            {
+                var selection = MessageBox.Show(
+                    "Print to PDF in progress. Continue closing?",
+                    "Print to PDF", MessageBoxButton.YesNo);
+                if (selection == MessageBoxResult.No)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
+            // Guard against double-call: CloseWebView() sets _webView2FrameworkElement to null,
+            // so if it was already called (e.g. via CloseWebViewCommand), this is a no-op.
+            if (_webView2FrameworkElement != null)
+            {
+                CloseWebView();
+            }
         }
 
         // Calling this function sets the various WebView2 control references and updates
@@ -431,18 +455,9 @@ namespace WebView2WpfBrowser
 
         void CloseCmdExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            if (_isPrintToPdfInProgress)
-            {
-                var selection = MessageBox.Show(
-                    "Print to PDF in progress. Continue closing?",
-                    "Print to PDF", MessageBoxButton.YesNo);
-                if (selection == MessageBoxResult.No)
-                {
-                    return;
-                }
-            }
-            CloseWebView();
-            this.Close(); // Close the window
+            // CloseWebView() and the print-in-progress check are handled by
+            // MainWindow_Closing, which fires when Close() is called.
+            this.Close();
         }
 
         void BackCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -1511,6 +1526,73 @@ namespace WebView2WpfBrowser
             {
                 MessageBox.Show(this, "Delete profile Failed: " + exception.Message, "Profile Delete");
             }
+        }
+
+        void SetOriginFeaturesCmdExecuted(object target, ExecutedRoutedEventArgs e)
+        {
+#if USE_WEBVIEW2_EXPERIMENTAL
+            var dialog = new TextInputDialog(
+                title: "Set Origin Features",
+                description: "Enter origin patterns separated by semicolons (e.g. https://example.com;https://*.contoso.com)");
+            if (dialog.ShowDialog() == true)
+            {
+                try
+                {
+                    string[] originPatterns = dialog.Input.Text.Split(
+                        new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                    var origins = new List<string>(originPatterns);
+                    var features = new List<KeyValuePair<CoreWebView2OriginFeature, CoreWebView2OriginFeatureState>>
+                    {
+                        new KeyValuePair<CoreWebView2OriginFeature, CoreWebView2OriginFeatureState>(
+                            CoreWebView2OriginFeature.EnhancedSecurityMode,
+                            CoreWebView2OriginFeatureState.Enabled)
+                    };
+                    WebViewProfile.SetOriginFeatures(origins, features);
+                    MessageBox.Show(this,
+                        "Set ESM=Enabled for: " + string.Join(", ", origins),
+                        "Set Origin Features");
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(this,
+                        "SetOriginFeatures Failed: " + exception.Message,
+                        "Set Origin Features");
+                }
+            }
+#endif
+        }
+
+        async void GetEffectiveFeaturesForOriginCmdExecuted(object target, ExecutedRoutedEventArgs e)
+        {
+#if USE_WEBVIEW2_EXPERIMENTAL
+            var dialog = new TextInputDialog(
+                title: "Get Effective Features For Origin",
+                description: "Enter an origin (e.g. https://example.com)",
+                defaultInput: "https://example.com");
+            if (dialog.ShowDialog() == true)
+            {
+                try
+                {
+                    var results = await WebViewProfile.GetEffectiveFeaturesForOriginAsync(dialog.Input.Text);
+                    var sb = new StringBuilder();
+                    sb.AppendLine($"Origin: {dialog.Input.Text}");
+                    sb.AppendLine();
+                    foreach (var setting in results)
+                    {
+                        sb.AppendLine($"  {setting.Key}: {setting.Value}");
+                    }
+                    MessageBox.Show(this, sb.ToString(), "Effective Features For Origin");
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(this,
+                        "GetEffectiveFeaturesForOriginAsync Failed: " + exception.Message,
+                        "Get Effective Features For Origin");
+                }
+            }
+#else
+            await Task.CompletedTask;
+#endif
         }
 
         void NonClientRegionSupportCmdExecuted(object target, ExecutedRoutedEventArgs e)
