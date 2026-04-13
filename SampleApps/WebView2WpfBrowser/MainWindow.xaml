@@ -51,6 +51,10 @@ found in the LICENSE file.
         <CommandBinding Command="{x:Static local:MainWindow.GeneralAutofillCommand}" Executed="GeneralAutofillCmdExecuted" CanExecute="CoreWebView2RequiringCmdsCanExecute"/>
         <CommandBinding Command="{x:Static local:MainWindow.NewBrowserVersionCommand}" Executed="NewBrowserVersionCmdExecuted" CanExecute="CoreWebView2RequiringCmdsCanExecute"/>
         <CommandBinding Command="{x:Static local:MainWindow.SwipeNavigationCommand}" Executed="SwipeNavigationCmdExecuted" CanExecute="CoreWebView2RequiringCmdsCanExecute"/>
+<!-- #if USE_WEBVIEW2_EXPERIMENTAL -->
+        <CommandBinding Command="{x:Static local:MainWindow.SetOriginFeaturesCommand}" Executed="SetOriginFeaturesCmdExecuted" CanExecute="CoreWebView2RequiringCmdsCanExecute"/>
+        <CommandBinding Command="{x:Static local:MainWindow.GetEffectiveFeaturesForOriginCommand}" Executed="GetEffectiveFeaturesForOriginCmdExecuted" CanExecute="CoreWebView2RequiringCmdsCanExecute"/>
+<!-- #endif -->
         <CommandBinding Command="{x:Static local:MainWindow.PdfToolbarSaveCommand}" Executed="PdfToolbarSaveCmdExecuted" CanExecute="CoreWebView2RequiringCmdsCanExecute"/>
         <CommandBinding Command="{x:Static local:MainWindow.SmartScreenEnabledCommand}" Executed="SmartScreenEnabledExecuted" CanExecute="CoreWebView2RequiringCmdsCanExecute"/>
         <CommandBinding Command="{x:Static local:MainWindow.AuthenticationCommand}" Executed="AuthenticationCmdExecuted" CanExecute="CoreWebView2RequiringCmdsCanExecute"/>
@@ -209,6 +213,10 @@ found in the LICENSE file.
                     <MenuItem Header="_Off" Command="{x:Static local:MainWindow.EnhancedSecurityModeLevelCommand}" CommandParameter="Off"/>
                     <MenuItem Header="_Strict" Command="{x:Static local:MainWindow.EnhancedSecurityModeLevelCommand}" CommandParameter="Strict"/>
                 </MenuItem>
+<!-- #endif -->
+<!-- #if USE_WEBVIEW2_EXPERIMENTAL -->
+                <MenuItem Header="Set Origin Features" Command="{x:Static local:MainWindow.SetOriginFeaturesCommand}"/>
+                <MenuItem Header="Get Effective Features For Origin" Command="{x:Static local:MainWindow.GetEffectiveFeaturesForOriginCommand}"/>
 <!-- #endif -->
                 <MenuItem Header="Toggle Non-Client Region Support" Command="{x:Static local:MainWindow.NonClientRegionSupportCommand}"/>
             </MenuItem>
