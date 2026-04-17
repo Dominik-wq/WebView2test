@@ -1,0 +1,23 @@
+name: Build WebView2 UWP
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: microsoft/setup-msbuild@v2
+
+      - uses: nuget/setup-nuget@v2
+
+      - name: Restore NuGet
+        run: nuget restore SampleApps/webview2_sample_uwp/webview2_sample_uwp.sln
+
+      - name: Build
+        run: msbuild SampleApps/webview2_sample_uwp/webview2_sample_uwp.sln /p:Configuration=Release /p:Platform=x64 /p:AppxBundle=Always /p:AppxBundlePlatforms=x64 /p:UapAppxPackageBuildMode=SideloadOnly
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: webview2-uwp
+          path: SampleApps/webview2_sample_uwp/**/*.appxbundle
