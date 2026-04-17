@@ -11,11 +11,15 @@ jobs:
 
       - uses: nuget/setup-nuget@v2
 
+      - name: Install Windows SDK
+        run: |
+          choco install windows-sdk-10-version-2004-all -y
+
       - name: Restore NuGet
         run: nuget restore SampleApps/webview2_sample_uwp/webview2_sample_uwp.sln
 
       - name: Build
-        run: msbuild SampleApps/webview2_sample_uwp/webview2_sample_uwp.sln /p:Configuration=Release /p:Platform=x64 /p:AppxBundle=Always /p:AppxBundlePlatforms=x64 /p:UapAppxPackageBuildMode=SideloadOnly
+        run: msbuild SampleApps/webview2_sample_uwp/webview2_sample_uwp.sln /p:Configuration=Release /p:Platform=x64 /p:AppxBundle=Always /p:AppxBundlePlatforms=x64 /p:UapAppxPackageBuildMode=SideloadOnly /p:WindowsTargetPlatformVersion=10.0.19041.0
 
       - uses: actions/upload-artifact@v4
         with:
