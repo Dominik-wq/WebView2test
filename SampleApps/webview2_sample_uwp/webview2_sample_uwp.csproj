@@ -242,7 +242,6 @@
       <Project>{9E85FA99-3C50-4EF5-BE29-F86837C31A60}</Project>
       <Name>AddHostObjectBridgeComponent</Name>
     </ProjectReference>
-    <ProjectReference Include="WinRTAdapter\WinRTAdapter.vcxproj">
       <Project>{f3f9258a-413b-4bbb-8916-673628473958}</Project>
       <Name>WinRTAdapter</Name>
     </ProjectReference>
